@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.9.18
+FROM phusion/baseimage:0.10.1
 
 MAINTAINER jshridha <jshridha@gmail.com>
 
@@ -28,9 +28,8 @@ RUN apt-get update && apt-get install -q -y --no-install-recommends \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN add-apt-repository -y ppa:mc3man/trusty-media && \
-	apt-get update && \
-	apt-get install -q -y --no-install-recommends ffmpeg v4l-utils python-pip python-dev libssl-dev libcurl4-openssl-dev libjpeg-dev && \
+RUN apt-get update && \
+	apt-get install -q -y --no-install-recommends ffmpeg v4l-utils python-pip python-dev libssl-dev libcurl4-openssl-dev libjpeg-dev python-setuptools && \
 	apt-get -y clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 	
@@ -40,6 +39,7 @@ RUN mkdir -p /var/lib/motioneye
 COPY script/* /usr/local/bin/ 
 RUN chmod +x /usr/local/bin/*
 
+RUN pip install --upgrade pip
 RUN pip install motioneye==$MOTIONEYE_VERSION
 
 #ADD supervisor /etc/supervisor
@@ -57,3 +57,5 @@ ADD init/*.sh /etc/my_init.d/
 ADD services /etc/service
 RUN chmod -v +x /etc/service/*/run /etc/service/*/finish /etc/my_init.d/*.sh
 
+#Hook
+COPY ./producer.py /home/nobody
